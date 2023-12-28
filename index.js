@@ -8,14 +8,21 @@ const port = 3000;
 app.use(express.json(), bodyParser.json())
 client.connect()
 
-app.get('/users', (req, res) => {
-  client.query(`SELECT * FROM test`, (err, result) => {
-    if (err) {
-      res.send(err)
-    }
-    res.send(result.rows)
+app.get('/users', async (req, res) => {
+  try {
+    let orderBy = req.query.orderBy || 'id'; 
+    let sortOrder = req.query.sortOrder || 'asc'; 
 
-  })
+    if (!['asc', 'desc'].includes(sortOrder.toLowerCase())) {
+      return res.status(400).json({ error: 'Neispravan redosled sortiranja. Dozvoljeni su "asc" i "desc".' });
+    }
+
+    const result = await client.query(`SELECT * FROM test ORDER BY ${orderBy} ${sortOrder}`);
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Interna server greška');
+  }
   client.end
 })
 app.post('/users', (req, res) => {
@@ -28,15 +35,12 @@ app.post('/users', (req, res) => {
   })
 
 })
-
-
-
 app.delete('/users/:id', async (req, res) => {
   const userid = req.params.id;
 
   try {
     const result = await client.query('DELETE FROM test WHERE id = $1', [userid]);
-    
+
     if (result.rowCount === 1) {
       res.status(200).json({ message: 'Korisnik uspešno obrisan.' });
     } else {
