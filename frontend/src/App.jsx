@@ -1,89 +1,54 @@
-const PRODUCTS = [
-  { category: "Fruits", price: "$1", stocked: true, name: "Apple" },
-  { category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit" },
-  { category: "Fruits", price: "$2", stocked: false, name: "Passionfruit" },
-  { category: "Vegetables", price: "$2", stocked: true, name: "Spinach" },
-  { category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin" },
-  { category: "Vegetables", price: "$1", stocked: true, name: "Peas" }
-];
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [location, setLocation] = useState('');
+  const [weatherData, setWeatherData] = useState(null);
+
+  const handleInputChange = (event) => {
+    setLocation(event.target.value);
+  };
+
+  const handleSearch = () => {
+    const apiUrl = `https://api.weatherapi.com/v1/current.json?key=008c232615f3432ebdd190049232206&q=${location}`;  
+    axios.get(apiUrl)
+      .then(response => {
+        setWeatherData(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching weather data:', error);
+      });
+  };
+
   return (
     <>
-      <Search />
-      <Columns />
-      <Table products={PRODUCTS} />
+      <Heading />
+      <input type="text" placeholder="Unesite zeljenu lokaciju"  onChange={handleInputChange} />
+      <button onClick={handleSearch}>🔍</button>
+      <WeatherDisplay weatherData={weatherData} />
     </>
-
-  )
+  );
 }
 
-function Search() {
+function Heading() {
   return (
-    <>
-      <input type="text" placeholder="Search" /> <br />
-      <input type="checkbox" />
-      <p style={{ margin: 0 }}>Only show product in stock</p>
-    </>
-  )
+    <h1>Weather in</h1>
+  );
 }
 
-function Columns() {
+const WeatherDisplay = ({ weatherData }) => {
   return (
-    <div style={{ display: "flex", gap: 10, flexDirection: "row" }}>
-      <h3>Name</h3>
-      <h3>Price</h3>
+    <div>
+      {weatherData ? (
+        <div>
+          <h2>{weatherData.current.temp_c}°C</h2>
+          <p>{weatherData.current.condition.text}</p>
+        </div>
+      ) : (
+        <p>Loading weather data...</p>
+      )}
     </div>
-  )
-}
-function Table({ products }) {
+  );
+};
 
-  return (
-    <>
-      <tr>
-        <th>
-          Fruits
-        </th>
-      </tr>
-      {products.map(x => {
-        if (x.category == "Fruits") {
-          return (
-            <tr>
-              <td style={!x.stocked ? ({ color: "red" }) : null}>
-                {x.name}
-              </td>
-              <td>
-                {x.price}
-              </td>
-            </tr>
-          )
-        }
-      })}
-      <tr>
-        <th>
-          Vegetables
-        </th>
-      </tr>
-      {products.map(x => {
-        if (x.category == "Vegetables") {
-          return (
-            <tr>
-              <td style={!x.stocked ? ({ color: "red" }) : null}>
-                {x.name}
-              </td>
-              <td>
-                {x.price}
-              </td>
-            </tr>
-          )
-        }
-      })}
-
-    </>
-  )
-
-
-}
-
-export default App
-
+export default App;
