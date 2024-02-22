@@ -2,14 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 
 export const Home = () => {
-    const [users, setUsers] = useState()
+  const [users, setUsers] = useState()
 
 
   useEffect(() => {
-   
+
     console.log("useefect")
     fetchData();
-    
+
   }, []);
   const fetchData = async () => {
     try {
@@ -21,10 +21,10 @@ export const Home = () => {
   };
 
 
-console.log("Sta")
+  console.log("Sta")
   return (
     <>
-  
+
       {users && (
         <div>
           <h1>User List</h1>
