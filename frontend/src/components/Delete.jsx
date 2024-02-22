@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { UpdateModal } from './UpdateModal';
 
 export const Delete = () => {
   const [data, setData] = useState([]);
+  const [modal, setModal]= useState(false)
+  const [item, setItem] = useState({
+    id:"",
+    firstname:"",
+    lastname:"",
+    location:""
+  })
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,7 +30,6 @@ export const Delete = () => {
       const response = await axios.delete(`http://localhost:3000/users/${id}`);
       if (response.status === 200) {
         console.log('Podatak uspešno obrisan.');
-        // Opcionalno: Ažurirajte stanje komponente nakon brisanja
         setData(data.filter(item => item.id !== id));
       } else {
         console.error('Greška pri brisanju podataka:', response.data.message);
@@ -31,19 +38,32 @@ export const Delete = () => {
       console.error('Greška pri brisanju podataka:', error);
     }
   };
+  const handleUpdateClick = (e) => {
+    setModal(!modal);
+    setItem({
+      id: e.id,
+     firstname: e.firstname,
+     lastname: e.lastname,
+     location: e.location
+    }) 
+  };
 
+  
   return (
-    <div>
+      <div>
       <h1>Podaci sa bekenda:</h1>
       <ul>
         {data.map(item => (
           <li key={item.id}>
-            {item.firstname} {item.lastname} ({item.location})
+          {item.firstname} {item.lastname} ({item.location})
             <button onClick={() => handleDelete(item.id)}>Obriši</button>
+            <button onClick={() => handleUpdateClick(item)} >Apdejt</button>
           </li>
         ))}
       </ul>
+      {modal && <UpdateModal drvo={item}/>}
     </div>
+    
   );
 };
 
