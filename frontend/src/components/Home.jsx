@@ -1,15 +1,12 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 export const Home = () => {
-  const [users, setUsers] = useState()
-
+  const [users, setUsers] = useState();
 
   useEffect(() => {
-
-    console.log("useefect")
+    console.log("useefect");
     fetchData();
-
   }, []);
   const fetchData = async () => {
     try {
@@ -20,16 +17,14 @@ export const Home = () => {
     }
   };
 
-
-  console.log("Sta")
+  console.log("Sta");
   return (
     <>
-
       {users && (
         <div>
           <h1>User List</h1>
           <ul>
-            {users.map(user => (
+            {users.map((user) => (
               <li key={user.id}>
                 <p>ID: {user.id}</p>
                 <p>First Name: {user.firstname}</p>
@@ -43,4 +38,4 @@ export const Home = () => {
       )}
     </>
   );
-}
+};
